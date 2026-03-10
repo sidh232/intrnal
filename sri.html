@@ -1,20 +1,265 @@
-<html>
-<head>
-<title>registration form</title>
-</head>
-<body>
-<h6>
-<label="name">Name:</label>
-<input type="text" name="name"><br><br>
-<label="age">Age:</label>
-<input type="text" name="Age"><br><br>
-<label="DOB">DOB:</label>
-<input type="text" name="DOB"><br><br>
-<label="mobile no">Mobile No:</label>
-<input type="text" name="mobile no"><br><br>
-<label="gmail">Gmail:</label>
-<input type="text" name="Gmail"><br><br>
-<input type="submit" value="submit"><br><br>
-</h6>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UK Jobs Link Hub</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7fb;
+        --card: #ffffff;
+        --text: #17233c;
+        --muted: #5f6b87;
+        --primary: #2f6df6;
+        --primary-dark: #1f50bd;
+        --ring: rgba(47, 109, 246, 0.2);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+        background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 260px);
+        color: var(--text);
+      }
+
+      .wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 16px 48px;
+      }
+
+      .hero {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(13, 31, 72, 0.08);
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .controls {
+        margin-top: 20px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr auto;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid #d9e0ee;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 1rem;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--ring);
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        padding: 12px 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: var(--primary-dark);
+      }
+
+      .meta {
+        margin: 14px 0 0;
+        font-size: 0.95rem;
+      }
+
+      .grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        border: 1px solid #e2e8f6;
+        box-shadow: 0 4px 18px rgba(9, 24, 58, 0.06);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 1.02rem;
+      }
+
+      .tags {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .card a {
+        margin-top: auto;
+        text-decoration: none;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .empty {
+        background: #fff7ed;
+        border: 1px solid #ffddb2;
+        color: #9a4d00;
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 14px;
+        display: none;
+      }
+
+      @media (max-width: 760px) {
+        .controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrapper">
+      <section class="hero">
+        <h1>UK Job Openings Hub</h1>
+        <p>
+          One place to access career pages from major UK employers. Use search by company or sector
+          (retail, food, logistics, hospitality, tech) and open the career site directly.
+        </p>
+
+        <div class="controls">
+          <input id="search" type="search" placeholder="Search company or sector..." aria-label="Search companies" />
+          <button id="openVisible" type="button">Open visible links</button>
+        </div>
+        <p class="meta" id="count"></p>
+      </section>
+
+      <section id="results" class="grid" aria-live="polite"></section>
+      <div class="empty" id="emptyState">No companies match this search. Try another keyword.</div>
+    </main>
+
+    <script>
+      const jobs = [
+        { company: "Schuh", sector: "Retail", url: "https://careers.schuh.co.uk/" },
+        { company: "River Island", sector: "Retail", url: "https://careers.riverisland.com/" },
+        { company: "Greene King", sector: "Hospitality", url: "https://jobs.greeneking.co.uk/" },
+        { company: "Wetherspoon", sector: "Hospitality", url: "https://www.jdwetherspooncareers.com/" },
+        { company: "Greggs", sector: "Food & Retail", url: "https://careers.greggs.co.uk/" },
+        { company: "Travelodge", sector: "Hospitality", url: "https://careers.travelodge.co.uk/" },
+        { company: "Whitbread", sector: "Hospitality", url: "https://www.whitbreadcareers.com/" },
+        { company: "Morrisons", sector: "Retail", url: "https://www.morrisons.jobs/" },
+        { company: "Co-op", sector: "Retail", url: "https://jobs.coop.co.uk/" },
+        { company: "Superdrug", sector: "Retail", url: "https://www.superdrug.jobs/" },
+        { company: "Holland & Barrett", sector: "Retail", url: "https://careers.hollandandbarrett.com/" },
+        { company: "Nando's", sector: "Food", url: "https://nandos.wd3.myworkdayjobs.com/Nandos" },
+        { company: "Domino's", sector: "Food", url: "https://www.dominosrecruitment.co.uk/" },
+        { company: "Five Guys", sector: "Food", url: "https://uk.fiveguys.com/careers/" },
+        { company: "Burger King", sector: "Food", url: "https://careers.burgerking.co.uk/" },
+        { company: "KFC", sector: "Food", url: "https://jobs.kfc.co.uk/" },
+        { company: "Subway", sector: "Food", url: "https://career.subway.com/" },
+        { company: "The Body Shop", sector: "Retail", url: "https://jobs.thebodyshop.com/" },
+        { company: "Deliveroo", sector: "Tech & Delivery", url: "https://careers.deliveroo.co.uk/" },
+        { company: "Just Eat", sector: "Tech & Delivery", url: "https://careers.justeat.com/" },
+        { company: "Royal Mail", sector: "Logistics", url: "https://jobs.royalmailgroup.com/" },
+        { company: "Inditex", sector: "Retail", url: "https://www.inditexcareers.com/" },
+        { company: "H&M", sector: "Retail", url: "https://career.hm.com/" },
+        { company: "Hilton", sector: "Hospitality", url: "https://jobs.hilton.com/" },
+        { company: "DPD", sector: "Logistics", url: "https://jobs.dpd.co.uk/" },
+        { company: "DHL", sector: "Logistics", url: "https://careers.dhl.com/" },
+        { company: "Uber", sector: "Tech & Mobility", url: "https://www.uber.com/uk/en/careers/" },
+        { company: "Starbucks", sector: "Food", url: "https://www.starbucks.co.uk/careers" },
+        { company: "McDonald's", sector: "Food", url: "https://www.mcdonalds.com/gb/en-gb/careers.html" },
+        { company: "Amazon", sector: "Tech & Retail", url: "https://www.amazon.jobs/en-gb/" },
+        { company: "Apple", sector: "Tech", url: "https://www.apple.com/uk/jobs/" },
+        { company: "Next", sector: "Retail", url: "https://careers.next.co.uk/" },
+        { company: "Primark", sector: "Retail", url: "https://careers.primark.com/" },
+        { company: "Frasers Group", sector: "Retail", url: "https://frasers.group/careers/jobs" },
+        { company: "JD", sector: "Retail", url: "https://careers.jdplc.com//jobs" },
+        { company: "Sainsbury's", sector: "Retail", url: "https://www.sainsburys.jobs/" },
+        { company: "Cineworld", sector: "Entertainment", url: "https://careers.cineworld.co.uk/jobs" },
+        { company: "ODEON", sector: "Entertainment", url: "https://odeoncareers.co.uk/" },
+        { company: "John Lewis Partnership", sector: "Retail", url: "https://www.jlpjobs.com/" },
+        { company: "Lush", sector: "Retail", url: "https://lush.pinpointhq.com/" },
+        { company: "Aldi", sector: "Retail", url: "https://www.aldirecruitment.co.uk/" },
+        { company: "Lidl", sector: "Retail", url: "https://careers.lidl.co.uk/" },
+        { company: "Asda", sector: "Retail", url: "https://www.asda.jobs/" },
+        { company: "Tesco", sector: "Retail", url: "https://www.tesco.com/careers/" },
+        { company: "Marks & Spencer", sector: "Retail", url: "https://jobs.marksandspencer.com/" },
+        { company: "Boots", sector: "Retail", url: "https://www.boots.jobs/" },
+        { company: "Costa", sector: "Food", url: "https://costacareers.co.uk/" },
+        { company: "Pret A Manger", sector: "Food", url: "https://www.pret.co.uk/en-GB/pret-jobs" },
+        { company: "Wagamama", sector: "Food", url: "https://jobs.wagamama.uk/" },
+        { company: "Wasabi", sector: "Food", url: "https://www.wasabi.uk.com/careers/" }
+      ];
+
+      const resultsEl = document.getElementById("results");
+      const searchEl = document.getElementById("search");
+      const countEl = document.getElementById("count");
+      const emptyEl = document.getElementById("emptyState");
+      const openVisibleBtn = document.getElementById("openVisible");
+
+      function renderCards(list) {
+        resultsEl.innerHTML = "";
+        list.forEach(({ company, sector, url }) => {
+          const article = document.createElement("article");
+          article.className = "card";
+          article.innerHTML = `
+            <h3>${company}</h3>
+            <div class="tags">${sector}</div>
+            <a href="${url}" target="_blank" rel="noopener noreferrer">Open careers site ↗</a>
+          `;
+          resultsEl.appendChild(article);
+        });
+
+        countEl.textContent = `${list.length} career links shown (total ${jobs.length}).`;
+        emptyEl.style.display = list.length === 0 ? "block" : "none";
+      }
+
+      function getFilteredJobs(query) {
+        const q = query.trim().toLowerCase();
+        if (!q) return jobs;
+        return jobs.filter((job) => `${job.company} ${job.sector}`.toLowerCase().includes(q));
+      }
+
+      searchEl.addEventListener("input", (event) => {
+        const filtered = getFilteredJobs(event.target.value);
+        renderCards(filtered);
+      });
+
+      openVisibleBtn.addEventListener("click", () => {
+        const visible = getFilteredJobs(searchEl.value).slice(0, 10);
+        visible.forEach((job, index) => {
+          setTimeout(() => window.open(job.url, "_blank", "noopener,noreferrer"), index * 120);
+        });
+      });
+
+      renderCards(jobs);
+    </script>
+  </body>
 </html>
